@@ -95,7 +95,7 @@ describe('GET /todos/:id', () => {
       .end(done);
   });
 
-  it('should return 404 if ID invalid', (done) => {
+  it('should return 404  if ID invalid', (done) => {
     request(app)
       .get(`/todos/${todos[0]._id.toHexString() + '111'}`)
       .expect(404)
