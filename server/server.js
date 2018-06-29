@@ -1,5 +1,6 @@
-let express = require('express');
-let bodyParser = require('body-parser');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
 
 let {mongoose} = require('./db/mongoose');
 let {ObjectID} = require('mongodb');
@@ -61,6 +62,32 @@ app.delete('/todos/:id', (req, res) => {
     res.send({doc});
   }).catch(e => res.status(400).send('Could not delete todo.'))
 });
+
+app.patch('/todos/:id', (req, res) => {
+  let id = req.params.id;
+  let body = _.pick(req.body, ['text', 'completed']);
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  if(_.isBoolean(body.completed) && body.completed) {
+    body.completedAt = new Date().getTime();
+  } else {
+    body.completed = false;
+    body.completedAt = null;
+  }
+
+  Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((doc) => {
+    if (!doc) {
+      return res.status(400).send(`Todo for ID (${id}) not found.`);
+    }
+
+    res.send({doc});
+  }).catch(e => res.status(400).send());
+
+});
+
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`)
