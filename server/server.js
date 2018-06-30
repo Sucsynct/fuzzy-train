@@ -80,7 +80,7 @@ app.patch('/todos/:id', (req, res) => {
 
   Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((doc) => {
     if (!doc) {
-      return res.status(400).send(`Todo for ID (${id}) not found.`);
+      return res.status(404).send(`Todo for ID (${id}) not found.`);
     }
 
     res.send({doc});
