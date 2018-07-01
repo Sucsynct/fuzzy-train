@@ -90,9 +90,21 @@ app.patch('/todos/:id', (req, res) => {
 
 });
 
+app.post('/users', (req, res) => {
+  let user = new User(_.pick(req.body, ['email', 'password']));
+
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }, (err) => {
+    res.status(400).send(err);
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch(e => res.status(400).send('Unable to create user.\n', e));
+});
+
 
 app.listen(port, () => {
-  console.log(`Listening on port ${port}...`)
+  console.log(`Listening on port ${port}...`);
 });
 
 module.exports = {app};
