@@ -8,6 +8,7 @@ let {mongoose} = require('./db/mongoose');
 let {ObjectID} = require('mongodb');
 let {Todo} = require('./models/todo');
 let {User} = require('./models/user');
+let {authenticate} = require('./middleware/authenticate');
 
 let app = express();
 const port = process.env.PORT;
@@ -100,6 +101,10 @@ app.post('/users', (req, res) => {
   }).then((token) => {
     res.header('x-auth', token).send(user);
   }).catch(e => res.status(400).send('Unable to create user.\n', e));
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
 });
 
 
